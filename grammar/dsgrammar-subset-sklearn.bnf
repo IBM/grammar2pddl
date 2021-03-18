@@ -1,0 +1,51 @@
+# Notation:
+# - Anything between angle brackets <..> denotes a symbol in the grammar
+# - The pipe symbol | denotes choice in the grammar
+# - Terminals are operators and/or hyperparameters denoted by strings braced by double quotes ".."
+# - { x }+ denotes one or more repetitions of x where x may be a symbol or terminals
+# - String hyperparameters have single quotes '..' around them
+# - __hpfloat denotes a float hyperparameter
+# - __hpint denotes an integer hyperparameter
+
+
+<start>  ::= <mm>
+<mm>     ::= <dag> " >> " <est>
+<dag>    ::= <tfm> | <tfm> " >> " <dag> | "((" <tfm> ") & (" <dag> ")) >> Concat()" |  "((" <est> ") & (" <dag> ")) >> Concat()" |   "( NoOp() & (" <dag> ")) >> Concat()"
+
+# EST         
+<est>    ::= <glm> | <dtc> | <ebm> | <gnb> | <knc> | <qda> 
+
+# GLM
+<glm>    ::= "LogisticRegression()"
+
+# DTC
+<dtc>    ::= "DecisionTreeClassifier()"
+
+# EBM
+<ebm>    ::= <rfc> | <gbc> | <etc>
+# RFC
+<rfc>    ::= "RandomForestClassifier()"
+# GBC
+<gbc>    ::= "GradientBoostingClassifier()"
+# ETC
+<etc>    ::= "ExtraTreesClassifier()"
+
+# GNB
+<gnb>    ::= "GaussianNB()"
+
+# KNC
+<knc>    ::= "KNeighborsClassifier()"
+
+# QDA
+<qda>    ::= "QuadraticDiscriminantAnalysis()"
+
+# TFM
+<tfm>    ::= <utfm> | <wtfm>
+
+# UTFM
+<utfm>   ::= "Normalizer()" | "MinMaxScaler()" | "RobustScaler()" | "StandardScaler()"
+
+# WTFM
+<wtfm>   ::= <pca>
+# PCA
+<pca>    ::= "PCA()"

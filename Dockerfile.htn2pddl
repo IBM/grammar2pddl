@@ -1,0 +1,3 @@
+FROM oudrea/htn2pddl
+
+CMD ["/bin/bash", "-c", "htntranslate -t ordered -i 20 -p .htn.pddl -l '(start)' $HTN_DOMAIN $HTN_PROBLEM"]

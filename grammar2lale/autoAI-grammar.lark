@@ -1,0 +1,59 @@
+start: rulelist
+
+rulelist : NEWLINE* rule_ (NEWLINE* rule_)* NEWLINE*
+
+rule_ : lhs "::=" rhs
+
+lhs: id
+
+rhs: _alternatives
+
+_alternatives: alternative ("|" alternative)*
+alternative: _element*
+_element: optional | zeroormore | oneormore | actions | id | pluscase
+
+optional: "[" _alternatives "]"
+zeroormore: "{" _alternatives "}"
+oneormore: "(" _alternatives ")"
+pluscase : "{"  _element*  "}" "+"
+
+actions: "\"" action+ "\""
+action: DATAFLOWFORWARD |  LPARAN | RPARAN | ANDSIGN | EQUALS | COMMA |TRUE | FALSE | SINGLEQUOTES | UNDERSCORES | CCNAME | EMPTYARGNAME
+
+DATAFLOWFORWARD: ">>"
+LPARAN: "("
+RPARAN: ")"
+ANDSIGN: "&"
+EQUALS: "="
+COMMA: ","
+TRUE: "True"
+FALSE: "False"
+SINGLEQUOTES: "'" CCNAME "'"
+UNDERSCORES: "__" CCNAME
+EMPTYARGNAME: CCNAME  "()"
+
+CCNAME: ("_"|LETTER|"-") ("_"|LETTER|DIGIT|"-")*
+
+COMMENT: "#" /[^\n]/*
+%ignore COMMENT
+
+id: "<" _ruleid ">" -> task
+
+_ruleid: _string
+
+_string : WORD
+
+%import common.DIGIT
+%import common.LETTER
+%import common.WORD
+%import common.SIGNED_NUMBER
+%import common.NEWLINE
+%import common.WS_INLINE
+%ignore WS_INLINE
+%ignore COMMENT
+
+
+
+
+
+

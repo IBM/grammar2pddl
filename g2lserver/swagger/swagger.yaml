@@ -1,0 +1,296 @@
+---
+swagger: "2.0"
+info:
+  description: "Data science grammar-based pipeline planning service"
+  version: "1.0.0"
+  title: "Planning Data Science Workflows from a grammar"
+host: "localhost:8080"
+basePath: "/"
+tags:
+- name: "grammar"
+  description: "Operations on grammars"
+- name: "pipelines"
+  description: "Operations to obtain and provide feedback for pipelines"
+schemes:
+- "http"
+- "https"
+paths:
+  /grammar:
+    post:
+      tags:
+      - "grammar"
+      summary: "Add a new grammar"
+      description: "Provide a new grammar to the service and receive an unique identifier"
+      operationId: "add_grammar"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Grammar that needs to be added"
+        required: true
+        schema:
+          $ref: "#/definitions/Grammar"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/GrammarID"
+        405:
+          description: "Invalid input"
+      x-swagger-router-controller: "g2lserver.controllers.grammar_controller"
+  /grammar/{grammarId}:
+    delete:
+      tags:
+      - "grammar"
+      summary: "Delete an existing grammar"
+      operationId: "delete_grammar"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "grammarId"
+        in: "path"
+        description: "Grammar to be deleted"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Grammar deleted"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Grammar not found"
+      x-swagger-router-controller: "g2lserver.controllers.grammar_controller"
+  /pipelines/{grammarId}:
+    post:
+      tags:
+      - "pipelines"
+      summary: "Get the next set of pipelines"
+      operationId: "get_pipelines"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "grammarId"
+        in: "path"
+        description: "Grammar to draw pipelines from"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Pipeline generation parameters"
+        required: true
+        schema:
+          $ref: "#/definitions/PipelineGenerationParams"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Pipelines"
+        400:
+          description: "Invalid parameters"
+        404:
+          description: "Grammar not found"
+      x-swagger-router-controller: "g2lserver.controllers.pipelines_controller"
+  /feedback/{grammarId}:
+    post:
+      tags:
+      - "pipelines"
+      summary: "Provide feedback for previously generated pipelines"
+      operationId: "feedback"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "grammarId"
+        in: "path"
+        description: "Grammar we are providing feedback for"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Pipeline feedback"
+        required: true
+        schema:
+          $ref: "#/definitions/PipelineFeedback"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/PipelineFeedbackResults"
+        400:
+          description: "Invalid parameters"
+        404:
+          description: "Grammar not found"
+      x-swagger-router-controller: "g2lserver.controllers.pipelines_controller"
+  /trained-pipelines/{grammarId}:
+    post:
+      tags:
+      - "pipelines"
+      summary: "Gets a number of pipelines and self-trains the parameters. Scores\
+        \ returned are accuracy scores from the training."
+      operationId: "train_pipelines"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "grammarId"
+        in: "path"
+        description: "Grammar to draw pipelines from"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Pipeline generation parameters"
+        required: true
+        schema:
+          $ref: "#/definitions/PipelineGenerationParams"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Pipelines"
+        400:
+          description: "Invalid parameters"
+        404:
+          description: "Grammar not found"
+      x-swagger-router-controller: "g2lserver.controllers.pipelines_controller"
+definitions:
+  Grammar:
+    type: "object"
+    required:
+    - "grammar"
+    properties:
+      grammar:
+        type: "string"
+    example:
+      grammar: "<start>  ::= <mm>\n
+                <mm>     ::= <dag> \" >> \" <est>\n
+                 <dag>    ::= \"NoOp()\" | <est> | <tfm> | <dag> \" >> \" <dag> | \"((\" <dag> \")\" { \" & (\" <dag> \")\" }+ \") >> Concat()\"\n
+                 <est>    ::= <glm> | <mlpc> | <dtc> | <ebm> | <gnb> | <knc> | <qda>\n 
+                 <glm>    ::= \"LogisticRegression(solver=\" <glmslv> \", penalty=\" <glmpen> \")\"\n
+                 <glmpen> ::= \"'l1'\" | \"'l2'\"\n
+                 <glmslv> ::= \"'newton-cg'\" | \"'sag'\" | \"'saga'\" | \"'lbfgs'\" | \"'liblinear'\"\n
+                 <mlpc>   ::= \"MLPClassifier(activation=\" <mlpca> \", solver=\" <mlpcs> \", learning_rate=\" <mlpcl> \")\"\n
+                 <mlpca>  ::= \"'identity'\" | \"'relu'\" | \"'tanh'\" | \"'logistic'\"\n
+                 <mlpcs>  ::= \"'lbfgs'\" | \"'sgd'\" | \"'adam'\"\n
+                 <mlpcl>  ::= \"'constant'\" | \"'invscaling'\" | \"'adaptive'\"\n
+                 <dtc>    ::= \"DecisionTreeClassifier(criterion=\" <dtcc> \", splitter=\" <dtcs> \")\"\n 
+                 <dtcc>   ::= \"'gini'\" | \"'entropy'\"\n
+                 <dtcs>   ::= \"'best'\" | \"'random'\"\n
+                 <ebm>    ::= <rfc> | <gbc> | <etc>\n
+                 <rfc>    ::= \"RandomForestClassifier(criterion=\" <rfcc> \")\"\n
+                 <rfcc>   ::= \"'gini'\" | \"'entropy'\"\n
+                 <gbc>    ::= \"GradientBoostingClassifier(loss=\" <gbcl> \")\"\n
+                 <gbcl>   ::= \"'deviance'\" | \"'exponential'\"\n
+                 <etc>    ::= \"ExtraTreesClassifier(criterion=\" <rfcc> \")\"\n
+                 <gnb>    ::= \"GaussianNB()\"\n
+                 <knc>    ::= \"KNeighborsClassifier(weights=\" <kncw> \", metric=\" <kncm> \")\"\n
+                 <kncw>   ::= \"'uniform'\" | \"'distance'\"\n
+                 <kncm>   ::= \"'euclidean'\" | \"'manhattan'\" | \"'minkowski'\"\n
+                 <qda>    ::= \"QuadraticDiscriminantAnalysis()\"\n
+                 <tfm>    ::= <utfm> | <wtfm>\n
+                 <utfm>   ::= <urfnc> | <ucfnc>\n
+                 <urfnc>  ::= <rimp> | <scale>\n
+                 <ucfnc>  ::= \"(KeepNumbers & (KeepNonNumbers >> OneHotEncoder)) >> Concat\"\n
+                 <rimp>   ::= \"SimpleImputer(strategy=\" <rimps> \")\"\n
+                 <rimps>  ::= \"'mean'\" | \"'median'\" | \"'most_frequent'\"\n
+                 <scale>  ::= \"Normalizer()\" | \"MinMaxScaler()\" | \"RobustScaler()\" | \"StandardScaler()\"\n
+                 <wtfm>   ::= <pca> | <nys> | <polyf>\n
+                 <pca>    ::= \"PCA(svd_solver=\" <pcas> \")\"\n
+                 <pcas>   ::= \"'auto'\" | \"'full'\" | \"'arpack'\" | \"'randomized'\"\n
+                 <nys>    ::= \"Nystroem(kernel=\" <nysk> \")\"\n
+                 <nysk>   ::= \"'rbf'\" | \"'cosine'\" | \"'poly'\" | \"'linear'\" | \"'laplacian'\" | \"'sigmoid'\"\n
+                 <polyf> ::= \"PolynomialFeatures()\"\n"
+  GrammarID:
+    type: "object"
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+    example:
+      id: "c243b5c93434b4ea728d4c16445f123e"
+  PipelineGenerationParams:
+    type: "object"
+    properties:
+      numberOfPipelines:
+        type: "integer"
+        format: "int64"
+      constraints:
+        type: "array"
+        items:
+          type: "string"
+    example:
+      numberOfPipelines: 10
+      constraints:
+      - "GaussianNB()"
+  Pipelines:
+    type: "array"
+    items:
+      $ref: "#/definitions/Pipelines_inner"
+  PipelineFeedback:
+    type: "object"
+    required:
+    - "feedback"
+    properties:
+      accuracyLow:
+        type: "number"
+        format: "float64"
+      accuracyHigh:
+        type: "number"
+        format: "float64"
+      feedback:
+        type: "array"
+        items:
+          $ref: "#/definitions/PipelineFeedback_feedback"
+    example:
+      feedback:
+      - accuracy: 0.57
+        id: "22a60352eea45dc7386ba0c4dcf2341c"
+      - accuracy: 0.5
+        id: "de1ac9c67b5885d8eb956d05ce4f6898"
+      - accuracy: 0.7
+        id: "f7bb7f0c5f3b0419fc45d02e978a73c7"
+      - accuracy: 0.9
+        id: "e714ad30c2fb80f2152bb403ae074292"
+  PipelineFeedbackResults:
+    type: "object"
+    properties:
+      validPipelines:
+        type: "array"
+        items:
+          type: "string"
+      invalidPipelines:
+        type: "array"
+        items:
+          type: "string"
+  Pipelines_inner:
+    type: "object"
+    required:
+    - "id"
+    - "pipeline"
+    properties:
+      id:
+        type: "string"
+      pipeline:
+        type: "string"
+      score:
+        type: "number"
+        format: "float64"
+  PipelineFeedback_feedback:
+    type: "object"
+    required:
+    - "accuracy"
+    - "id"
+    properties:
+      id:
+        type: "string"
+      accuracy:
+        type: "number"
+        format: "float64"

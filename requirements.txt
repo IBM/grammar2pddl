@@ -1,0 +1,11 @@
+Flask==0.10.1
+lark
+lark-parser>=0.7.7
+connexion==2.3.0
+six==1.12.0
+flask_testing==0.7.1
+tabulate==0.8.5
+lale
+planutils
+xgboost
+aif360
