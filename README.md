@@ -102,6 +102,7 @@ $ ./build_translator.sh
 3. Executing the cells will create intermediate planning and result files in `output`. 
   * You can run an instance of [VS Code](https://code.visualstudio.com/) with the [PDDL language support plugin](https://marketplace.visualstudio.com/items?itemName=jan-dolejsi.pddl) to see intermediate planning task files: `code output/`
 
+
 ## Using alternate planners
 
 By default, the code using the `kstar` planner that is part of the `planutils` package. You can however use a different planner by setting the `PLANNER_URL` environment variable to a service with a matching REST API.
