@@ -13,7 +13,7 @@ PROBLEM_FILE=$(basename $2)
 cp $1 $tmp_dir/
 cp $2 $tmp_dir/
 
-docker run -v $tmp_dir:/files -e HTN_DOMAIN=/files/$DOMAIN_FILE -e HTN_PROBLEM=/files/$PROBLEM_FILE htn2pddl
+docker run -v $tmp_dir:/files:Z -e HTN_DOMAIN=/files/$DOMAIN_FILE -e HTN_PROBLEM=/files/$PROBLEM_FILE htn2pddl
 
 cp $tmp_dir/${DOMAIN_FILE}.pddl $(dirname $1)/
 cp $tmp_dir/${PROBLEM_FILE}.pddl $(dirname $2)/

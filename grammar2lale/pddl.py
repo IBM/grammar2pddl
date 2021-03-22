@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-
+import os
 import sys
 
 try:
@@ -418,7 +418,9 @@ class PDDLGenerator(object):
         with open(HTN_problem_file, "w") as f:
             f.write(HTN_problem)
 
-        command = [self.HTN2PDDL_COMMAND, HTN_domain_file, HTN_problem_file]
+        sh_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../")
+        sh_path = os.path.abspath(os.path.join(sh_path, self.HTN2PDDL_COMMAND))
+        command = [sh_path, HTN_domain_file, HTN_problem_file]
         try:
 #            print("Running: " + str(command))
             self.make_call(command, '/tmp/', enable_output=enable_planners_output)
