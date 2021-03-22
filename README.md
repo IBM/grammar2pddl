@@ -12,48 +12,57 @@ The full details are in Katz, M., Ram, P., Sohrabi, S., & Udrea, O. (2020). *Exp
 
 Install or verify that you have the following pre-requisites:
 
-1. [Docker](https://docs.docker.com/get-docker/).
+1. Podman comes with RHEL8 by default.
    
 2. [Planutils](https://github.com/AI-Planning/planutils). 
-Planutils uses [Singularity](https://sylabs.io/singularity/) for individual tools. To install singularity on Debian/Ubuntu:
+Planutils uses [Singularity](https://sylabs.io/singularity/) for individual tools. To install singularity on RHEL8 checkout [Doc](https://sylabs.io/guides/3.7/admin-guide/installation.html#installation-on-linux):
 ```
 ## Install system dependencies
-$ sudo apt-get update &&   sudo apt-get install -y build-essential   libseccomp-dev pkg-config squashfs-tools cryptsetup
+$ sudo yum update -y && \
+     sudo yum groupinstall -y 'Development Tools' && \
+     sudo yum install -y \
+     openssl-devel \
+     libuuid-devel \
+     libseccomp-devel \
+     wget \
+     squashfs-tools \
+     cryptsetup
 
 ## Install Golang and set up your environment for Go
-$ export VERSION=1.15.8 OS=linux ARCH=amd64  # change this as you need
-$ wget -O /tmp/go${VERSION}.${OS}-${ARCH}.tar.gz https://dl.google.com/go/go${VERSION}.${OS}-${ARCH}.tar.gz &&   sudo tar -C /usr/local -xzf /tmp/go${VERSION}.${OS}-${ARCH}.tar.gz
- 
-echo 'export GOPATH=${HOME}/go' >> ~/.bashrc &&   echo 'export PATH=/usr/local/go/bin:${PATH}:${GOPATH}/bin' >> ~/.bashrc &&   source ~/.bashrc
-curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh |   sh -s -- -b $(go env GOPATH)/bin v1.21.0
+$ export VERSION=1.14.12 OS=linux ARCH=amd64 && \
+    wget https://dl.google.com/go/go$VERSION.$OS-$ARCH.tar.gz && \
+    sudo tar -C /usr/local -xzvf go$VERSION.$OS-$ARCH.tar.gz && \
+    rm go$VERSION.$lOS-$ARCH.tar.gz
+$ echo 'export GOPATH=${HOME}/go' >> ~/.bashrc && \
+    echo 'export PATH=/usr/local/go/bin:${PATH}:${GOPATH}/bin' >> ~/.bashrc && \
+    source ~/.bashrc     
 
 ## Download and build singularity
 
 $ wget https://github.com/hpcng/singularity/releases/download/v3.7.2/singularity-3.7.2.tar.gz
 $ tar xvf singularity-3.7.2.tar.gz
 $ cd singularity &&   ./mconfig &&   cd ./builddir &&   make &&   sudo make install
+$ source ~/.bashrc
 ```
 
-Now you can install and setup planutils, and install the required tools ([K* planner](https://github.com/ctpelok77/kstar), etc. )
+3. Install python requirements. We strongly recommend you do so from a `conda` environment.
 ```
-$ pip install planutils
+$ conda create -n grammar2plans python=3.7
+$ conda activate grammar2plans
+$ pip install -r requirements.txt
+
+## setup planutils
 $ planutils setup
-
 $ planutils install kstar
 ```
-
-3. [Jupyter notebooks](https://jupyter.org/install) are needed to run the sample notebook.
-4. Install python requirements. We strongly recommend you do so from a `conda` environment. We have included a conda environment spec in `grammar2plans.yml`. Simply run `conda env create -f grammar2plans.yml` and then `conda activate grammar2plans`. Alternatively, you
-can try installing requirments directly via `pip install -r requirements.txt`
+4. [Jupyter notebooks](https://jupyter.org/install) are needed to run the sample notebook.
 5. Execute `./build_translator.sh` to build a docker image for the [HTN to PDDL](https://github.com/ronwalf/HTN-Translation) translator.
-6. Add the code root directory to path, so that `run_translator.sh` is runnable from anywhere: `export PATH=$PATH:$(pwd)`
 
 ## Getting started/samples
 
-1. Add the installation directory to `PYTHONPATH`: `export PYTHONPATH=$PYTHONPATH:.`
-2. Start jupyter notebooks: `jupyter notebook`.
-3. Navigate to `notebooks/DataSciencePipelinePlanningTutorial`
-4. Executing the cells will create intermediate planning and result files in `output`. You can run an instance of [VS Code](https://code.visualstudio.com/) with the [PDDL language support plugin](https://marketplace.visualstudio.com/items?itemName=jan-dolejsi.pddl) to see intermediate planning task files: `code output/`
+1. Start jupyter notebooks: `jupyter notebook`.
+2. Navigate to `notebooks/DataSciencePipelinePlanningTutorial`
+3. Executing the cells will create intermediate planning and result files in `output`. You can run an instance of [VS Code](https://code.visualstudio.com/) with the [PDDL language support plugin](https://marketplace.visualstudio.com/items?itemName=jan-dolejsi.pddl) to see intermediate planning task files: `code output/`
 
 ## Using alternate planners
 
