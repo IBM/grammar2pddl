@@ -74,7 +74,7 @@ $ cd singularity &&   ./mconfig &&   cd ./builddir &&   make &&   sudo make inst
 
 ### 3. Install Python dependencies in conda environment
   * Install packages through pip
-  * Setup [planutils](https://github.com/AI-Planning/planutils) and install [K* planner](https://github.com/ctpelok77/kstar)
+  * Setup [planutils](https://github.com/AI-Planning/planutils) and install [K* planner](https://github.com/ctpelok77/kstar) and [HTN to PDDL](https://github.com/ronwalf/HTN-Translation) translator.
 ```
 ## Create a conda environment
 $ conda create -n grammar2plans python=3.7
@@ -85,7 +85,9 @@ $ pip install -r requirements.txt
 
 ## Setup planutils
 $ planutils setup
-$ planutils install kstar          
+$ export PATH=$PATH:~/.planutils/bin
+$ planutils install kstar
+$ planutils install hpddl2pddl
 ```    
 
 ### 4. Build Docker Image for running HTN to PDDL translator
