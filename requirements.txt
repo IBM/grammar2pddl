@@ -9,4 +9,3 @@ planutils
 xgboost
 aif360
 jupyter
-jupyter-notebook
