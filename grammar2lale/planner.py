@@ -37,7 +37,7 @@ def run_planner(task):
 
 
 def local_planner_exists():
-    return os.system(PLANNER_LOCAL_COMMAND + " > /dev/null") != 127
+    return os.system(PLANNER_LOCAL_COMMAND + " >& /dev/null") != 127
 
 
 def run_planner_local(task):
