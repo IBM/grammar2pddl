@@ -69,7 +69,7 @@ $ echo 'export GOPATH=${HOME}/go' >> ~/.bashrc && \
 ## Download and build singularity
 $ wget https://github.com/hpcng/singularity/releases/download/v3.7.2/singularity-3.7.2.tar.gz
 $ tar xvf singularity-3.7.2.tar.gz
-$ cd singularity &&   ./mconfig &&   cd ./builddir &&   make &&   sudo make install    
+$ cd singularity &&   ./mconfig &&   cd ./builddir &&   make &&   sudo make install && cd ../..   
 ```
 
 ### 3. Install Python dependencies in conda environment
