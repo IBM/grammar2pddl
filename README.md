@@ -10,27 +10,8 @@ The full details are in Katz, M., Ram, P., Sohrabi, S., & Udrea, O. (2020). *Exp
 
 ## Installation
 
-### 1. Install [Docker](https://docs.docker.com/get-docker/) for Debian/Ubuntu.
-  * In Redhat8, Podman is installed by default, so there's no need to install docker.
-```
-## Install docker in Ubuntu
-$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-$ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-$ sudo apt-get update
-$ apt-cache policy docker-ce
-$ sudo apt-get install -y docker-ce
-$ sudo systemctl status docker
- 
-## Add user to docker group
-$ sudo groupadd docker
-$ sudo usermod -aG docker $USER   
-$ sudo systemctl restart docker    # logout or restart docker
 
-## Check if you can run docker wihtout root
-$ docker run hello-world
-```
-
-### 2. Install [Singularity](https://sylabs.io/singularity/)
+### 1. Install [Singularity](https://sylabs.io/singularity/) (needed for planutils)
   * Currently, singularity doesn't support MAC OS.
   * Checkout [Admin guide](https://sylabs.io/guides/3.7/admin-guide/index.html) for the details
 ```
@@ -72,7 +53,7 @@ $ tar xvf singularity-3.7.2.tar.gz
 $ cd singularity &&   ./mconfig &&   cd ./builddir &&   make &&   sudo make install && cd ../..   
 ```
 
-### 3. Install Python dependencies in conda environment
+### 2. Install Python dependencies in conda environment
   * Install packages through pip
   * Setup [planutils](https://github.com/AI-Planning/planutils) and install [K* planner](https://github.com/ctpelok77/kstar) and [HTN to PDDL](https://github.com/ronwalf/HTN-Translation) translator.
 ```
@@ -89,12 +70,6 @@ $ export PATH=$PATH:~/.planutils/bin
 $ planutils install kstar
 $ planutils install hpddl2pddl
 ```    
-
-### 4. Build Docker Image for running HTN to PDDL translator
-  * Image contains [HTN to PDDL](https://github.com/ronwalf/HTN-Translation) translator that is used by `run_translator.sh`.
-```
-$ ./build_translator.sh
-```
 
 
 ## Getting started/samples
