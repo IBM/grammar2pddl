@@ -36,7 +36,7 @@ class PipelineOptimizer(APipelineOptimizer):
             scoring=opt_scorer
         )
         trained_pipeline = None
-        best_accuracy = 0;
+        best_accuracy = 0
 
         try:
             trained_pipeline = opt.fit(self.X, self.y)
