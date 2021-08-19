@@ -12,8 +12,5 @@ sklearn_diagram = Diagram("sklearn_subset", Sequence(
         ),
         "DAG"
     ),
-    Group(
-        est_diagram, 
-        "est"
-    )
+    est_diagram
 ))
