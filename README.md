@@ -66,7 +66,6 @@ $ pip install -r requirements.txt
 
 ## Setup planutils
 $ planutils setup
-$ planutils activate
 $ planutils install kstar
 $ planutils install hpddl2pddl
 ```    
