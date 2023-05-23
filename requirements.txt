@@ -1,4 +1,4 @@
-Flask==1.0
+Flask==2.2.5
 lark
 connexion==2.3.0
 six==1.12.0
